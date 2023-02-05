@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.github.reconsolidated</groupId>
-	<artifactId>meetupapi</artifactId>
+	<artifactId>weaskedapi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>meetupapi</name>
-	<description>Meetup app api</description>
+	<name>weaskedapi</name>
+	<description>WeAsked app api</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
