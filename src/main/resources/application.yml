@@ -5,7 +5,13 @@ server:
     include-binding-errors: always
   port: 8080
   address: 0.0.0.0
+  contextPath: /uaa
 
+
+security.oauth2.client.clientId: acme
+security.oauth2.client.clientSecret: acmesecret
+security.oauth2.client.authorized-grant-types: authorization_code,refresh_token,password
+security.oauth2.client.scope: openid
 
 spring:
   datasource:
@@ -20,22 +26,14 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
-
-  mail:
-    host: localhost
-    port: 1025
-    username: hello
-    password: hello
-
-    properties:
-      mail:
-        smtp:
-          ssl:
-            trust: "*"
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: 3d603b0b17c891fe8c2d
+            clientSecret: 3ad8808943835636248312b16c20b05f2ada56c9
+          google:
+            clientId: 42661904383-0r3dvpam6r98t31j43ak63fmrqtmsi1k.apps.googleusercontent.com
+            clientSecret: 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
 
