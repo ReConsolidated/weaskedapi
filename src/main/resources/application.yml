@@ -13,6 +13,17 @@ security.oauth2.client.clientSecret: acmesecret
 security.oauth2.client.authorized-grant-types: authorization_code,refresh_token,password
 security.oauth2.client.scope: openid
 
+logging:
+  level:
+    root: INFO
+
+keycloak:
+  realm: staffect
+  auth-server-url: http://130.61.252.200:8180/
+  resource: spring-app
+  bearer-only: true
+  ssl-required: NONE
+
 spring:
   datasource:
     password: ${SPRING_DATASOURCE_PASSWORD:docker}
@@ -28,12 +39,13 @@ spring:
     show-sql: true
   security:
     oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+          scope: openid,profile,email
       client:
         registration:
-          github:
-            clientId: 3d603b0b17c891fe8c2d
-            clientSecret: 3ad8808943835636248312b16c20b05f2ada56c9
           google:
             clientId: 42661904383-0r3dvpam6r98t31j43ak63fmrqtmsi1k.apps.googleusercontent.com
             clientSecret: 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
-

@@ -1,7 +1,10 @@
 package io.github.reconsolidated.weaskedapi;
 
+import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -17,7 +20,7 @@ import java.util.Map;
 
 @SpringBootApplication
 @RestController
-public class WeAskedApiApplication extends WebSecurityConfigurerAdapter {
+public class WeAskedApiApplication {
 
 	@GetMapping("/user")
 	public Map<String, Object> user(@AuthenticationPrincipal OAuth2User principal) {
@@ -28,25 +31,8 @@ public class WeAskedApiApplication extends WebSecurityConfigurerAdapter {
 		SpringApplication.run(WeAskedApiApplication.class, args);
 	}
 
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		// @formatter:off
-		http
-				.authorizeRequests(a -> a
-						.antMatchers("/", "/error", "/webjars/**").permitAll()
-						.anyRequest().authenticated()
-				)
-				.exceptionHandling(e -> e
-						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-				)
-				.logout(l -> l
-						.logoutSuccessUrl("/").permitAll()
-				)
-				.csrf(c -> c
-						.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-				)
-				.oauth2Login();
-		// @formatter:on
+	@Bean
+	public KeycloakConfigResolver keycloakConfigResolver() {
+		return new KeycloakSpringBootConfigResolver();
 	}
 }
