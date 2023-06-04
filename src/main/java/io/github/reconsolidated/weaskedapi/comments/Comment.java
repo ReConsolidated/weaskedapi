@@ -17,7 +17,8 @@ import javax.persistence.Id;
 public class Comment {
     @Id
     @GeneratedValue(generator = "comment_id_seq")
-    private long id;
+    private Long id;
+    private Long authorId;
     private String code;
     private String authorName;
     private String text;

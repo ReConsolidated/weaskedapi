@@ -18,7 +18,7 @@ logging:
     root: INFO
 
 keycloak:
-  realm: staffect
+  realm: weasked
   auth-server-url: http://130.61.252.200:8180/
   resource: spring-app
   bearer-only: true

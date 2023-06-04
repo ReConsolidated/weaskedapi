@@ -10,8 +10,8 @@ import java.util.List;
 public class CommentsService {
     private final CommentsRepository commentsRepository;
 
-    public void addComment(Comment comment) {
-        commentsRepository.save(comment);
+    public Comment addComment(Comment comment) {
+        return commentsRepository.save(comment);
     }
 
     public List<Comment> getAll() {

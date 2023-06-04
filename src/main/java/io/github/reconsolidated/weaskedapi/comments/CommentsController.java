@@ -1,5 +1,7 @@
 package io.github.reconsolidated.weaskedapi.comments;
 
+import io.github.reconsolidated.weaskedapi.authentication.appUser.AppUser;
+import io.github.reconsolidated.weaskedapi.authentication.currentUser.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +21,11 @@ public class CommentsController {
     }
 
     @PostMapping("/comments")
-    public ResponseEntity<?> addComment(@RequestBody Comment comment) {
-        commentsService.addComment(comment);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Comment> addComment(@CurrentUser AppUser user, @RequestBody Comment comment) {
+        comment.setAuthorId(user.getId());
+        comment.setAuthorName(user.getUserName());
+        Comment result = commentsService.addComment(comment);
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/clear_all")

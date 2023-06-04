@@ -28,13 +28,14 @@ public class AppUserService {
         return appUserRepository.findByEmail(inviteeEmail);
     }
 
-    public AppUser getOrCreateUser(String keycloakId, String email, String firstName, String lastName) {
+    public AppUser getOrCreateUser(String keycloakId, String email, String userName, String firstName, String lastName) {
         return appUserRepository.findByKeycloakId(keycloakId).orElseGet(() -> {
             AppUser appUser = new AppUser();
             appUser.setKeycloakId(keycloakId);
             appUser.setEmail(email);
             appUser.setFirstName(firstName);
             appUser.setLastName(lastName);
+            appUser.setUserName(userName);
             appUser.setImageUrl(defaultImageUrl);
 
             return appUserRepository.save(appUser);
