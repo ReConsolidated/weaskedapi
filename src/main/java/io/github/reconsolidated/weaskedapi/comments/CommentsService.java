@@ -2,6 +2,7 @@ package io.github.reconsolidated.weaskedapi.comments;
 
 import io.github.reconsolidated.weaskedapi.authentication.appUser.AppUser;
 import io.github.reconsolidated.weaskedapi.reactions.Reaction;
+import io.github.reconsolidated.weaskedapi.reactions.ReactionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentsService {
     private final CommentsRepository commentsRepository;
+    private final ReactionRepository reactionRepository;
 
     public Comment addComment(Comment comment) {
         return commentsRepository.save(comment);
@@ -39,6 +41,7 @@ public class CommentsService {
             throw new IllegalArgumentException("This user has already used this reaction on this comment");
         }
 
+
         Reaction reaction = new Reaction();
         reaction.setCommentId(commentId);
         reaction.setReactionType(reactionType);
@@ -46,15 +49,20 @@ public class CommentsService {
         reaction.setCreatedAt(Date.valueOf(LocalDate.now()));
         comment.getReactions().add(reaction);
 
+        reactionRepository.save(reaction);
         return commentsRepository.save(comment);
     }
 
     public Comment removeReaction(AppUser user, Long commentId, String reactionType) {
         Comment comment = commentsRepository.findById(commentId).orElseThrow();
 
-        comment.getReactions().removeIf((c) -> c.getAuthorId().equals(user.getId()) &&
-                c.getReactionType().equals(reactionType));
-
+        for (Reaction reaction : comment.getReactions()) {
+            if (reaction.getAuthorId().equals(user.getId()) && reaction.getReactionType().equals(reactionType)) {
+                comment.getReactions().remove(reaction);
+                reactionRepository.deleteById(reaction.getId());
+                break;
+            }
+        }
         return commentsRepository.save(comment);
     }
 }
