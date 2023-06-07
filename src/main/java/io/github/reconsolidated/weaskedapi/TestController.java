@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class TestController {
 
-    private final GoogleAccountParser googleAccountParser;
-
     @GetMapping("/api/public/hello")
     public String publicEndpoint() {
         return "Hello, this is a public endpoint!";

@@ -24,14 +24,15 @@ keycloak:
   bearer-only: true
   ssl-required: NONE
 
+
 spring:
   datasource:
     password: ${SPRING_DATASOURCE_PASSWORD:docker}
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/postgres}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -49,3 +50,5 @@ spring:
           google:
             clientId: 42661904383-0r3dvpam6r98t31j43ak63fmrqtmsi1k.apps.googleusercontent.com
             clientSecret: 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
+  liquibase:
+    change-log: db/example-changelog.sql
