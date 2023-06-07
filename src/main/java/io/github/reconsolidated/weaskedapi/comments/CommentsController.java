@@ -24,7 +24,7 @@ public class CommentsController {
     public ResponseEntity<Comment> addReaction(@CurrentUser AppUser user,
                                                      @PathVariable(name="commentId") Long commentId,
                                                      @RequestParam String reaction) {
-        return ResponseEntity.ok(commentsService.addReaction(user, commentId, reaction));
+        return ResponseEntity.ok(commentsService.updateReaction(user, commentId, reaction));
     }
 
     @PatchMapping("/comments/{commentId}/remove-reaction")

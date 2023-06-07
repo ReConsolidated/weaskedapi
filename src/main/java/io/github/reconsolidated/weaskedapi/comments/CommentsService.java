@@ -33,12 +33,12 @@ public class CommentsService {
         commentsRepository.deleteAll();
     }
 
-    public Comment addReaction(AppUser user, Long commentId, String reactionType) {
+    public Comment updateReaction(AppUser user, Long commentId, String reactionType) {
         Comment comment = commentsRepository.findById(commentId).orElseThrow();
         if (comment.getReactions().stream().anyMatch(
                 (c) -> c.getAuthorId().equals(user.getId()) &&
                         c.getReactionType().equals(reactionType))){
-            throw new IllegalArgumentException("This user has already used this reaction on this comment");
+            return removeReaction(user, commentId, reactionType);
         }
 
 
