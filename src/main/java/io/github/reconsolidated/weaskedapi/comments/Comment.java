@@ -24,6 +24,7 @@ public class Comment {
     private Long authorId;
     private String code;
     private String authorName;
+    @Column(length = 10000)
     private String text;
     private Date createdAt = Date.valueOf(LocalDate.now());
     @OneToMany(fetch = FetchType.EAGER)
