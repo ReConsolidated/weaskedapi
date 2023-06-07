@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Comment {
     private String code;
     private String authorName;
     private String text;
-    private Date createdAt;
+    private Date createdAt = Date.valueOf(LocalDate.now());
     @OneToMany(fetch = FetchType.EAGER)
     private List<Reaction> reactions = new ArrayList<>();
 }

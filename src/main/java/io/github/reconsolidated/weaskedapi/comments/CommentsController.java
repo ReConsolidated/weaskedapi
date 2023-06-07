@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Validated
@@ -38,6 +41,8 @@ public class CommentsController {
     public ResponseEntity<Comment> addComment(@CurrentUser AppUser user, @RequestBody Comment comment) {
         comment.setAuthorId(user.getId());
         comment.setAuthorName(user.getUserName());
+        comment.setCreatedAt(Date.valueOf(LocalDate.now()));
+        comment.setReactions(new ArrayList<>());
         Comment result = commentsService.addComment(comment);
         return ResponseEntity.ok(result);
     }
