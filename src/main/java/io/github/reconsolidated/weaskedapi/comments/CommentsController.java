@@ -20,6 +20,20 @@ public class CommentsController {
         return ResponseEntity.ok(commentsService.getAllByCode(code));
     }
 
+    @PatchMapping("/comments/{commentId}")
+    public ResponseEntity<Comment> addReaction(@CurrentUser AppUser user,
+                                                     @PathVariable(name="commentId") Long commentId,
+                                                     @RequestParam String reaction) {
+        return ResponseEntity.ok(commentsService.addReaction(user, commentId, reaction));
+    }
+
+    @PatchMapping("/comments/{commentId}/remove-reaction")
+    public ResponseEntity<Comment> removeReaction(@CurrentUser AppUser user,
+                                               @PathVariable(name="commentId") Long commentId,
+                                               @RequestParam String reaction) {
+        return ResponseEntity.ok(commentsService.removeReaction(user, commentId, reaction));
+    }
+
     @PostMapping("/comments")
     public ResponseEntity<Comment> addComment(@CurrentUser AppUser user, @RequestBody Comment comment) {
         comment.setAuthorId(user.getId());

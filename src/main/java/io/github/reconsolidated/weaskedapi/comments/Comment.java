@@ -1,14 +1,15 @@
 package io.github.reconsolidated.weaskedapi.comments;
 
+import io.github.reconsolidated.weaskedapi.reactions.Reaction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,4 +25,6 @@ public class Comment {
     private String authorName;
     private String text;
     private Date createdAt;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Reaction> reactions = new ArrayList<>();
 }
