@@ -8,6 +8,6 @@ ALTER TABLE IF EXISTS public.comment
 
 --changeset gracjan.pasik:2 labels:example-label context:example-context
 --comment: Increase text column size
-ALTER TABLE public.comment
+ALTER TABLE IF EXISTS public.comment
     ALTER COLUMN text TYPE VARCHAR(10000);
 --rollback ALTER TABLE IF EXISTS public.comment DROP COLUMN IF EXISTS created_at;
