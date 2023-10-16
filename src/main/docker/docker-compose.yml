@@ -24,4 +24,3 @@ services:
       - POSTGRES_PASSWORD=docker
     ports:
       - '5434:5432'
-      - '5432:5434'
