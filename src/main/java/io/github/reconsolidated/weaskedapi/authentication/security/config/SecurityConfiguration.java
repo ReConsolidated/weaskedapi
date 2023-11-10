@@ -49,6 +49,8 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
                 .permitAll()
                 .antMatchers("/clear_all")
                 .permitAll()
+                .antMatchers("/test")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
