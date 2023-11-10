@@ -13,13 +13,13 @@ primary_region = "waw"
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ["app"]
 
 [env]
   SPRING_DATASOURCE_URL = "jdbc:postgresql://weaskedapi-db.flycast:5432/weaskedapi?sslmode=disable"
   SPRING_DATASOURCE_USERNAME = "postgres"
-  SPRING_DATASOURCE_PASSWORD = "5zuDiKiVtJzKXsp"
+  SPRING_DATASOURCE_PASSWORD = "docker"
   SPRING_JPA_HIBERNATE_DDL_AUTO = "update"
 
 swap_size_mb = 512
