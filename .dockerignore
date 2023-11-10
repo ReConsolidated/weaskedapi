@@ -1,0 +1,9 @@
+# flyctl launch added from .gitignore
+# Project exclude paths
+**\app.log
+
+# flyctl launch added from .idea\.gitignore
+# Default ignored files
+.idea\shelf
+.idea\workspace.xml
+fly.toml
