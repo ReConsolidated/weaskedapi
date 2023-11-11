@@ -72,16 +72,6 @@ public class AppUserService implements UserDetailsService {
         return appUserRepository.findByEmail(friendEmail);
     }
 
-    public void setFirstName(AppUser user, String name) {
-        user.setFirstName(name);
-        appUserRepository.save(user);
-    }
-
-    public void setLastName(AppUser user, String name) {
-        user.setLastName(name);
-        appUserRepository.save(user);
-    }
-
     public void setImageUrl(AppUser user, String imageUrl) {
         user.setImageUrl(imageUrl);
         appUserRepository.save(user);

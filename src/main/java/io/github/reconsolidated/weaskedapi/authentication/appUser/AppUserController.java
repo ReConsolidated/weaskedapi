@@ -14,19 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class AppUserController {
     private final AppUserService appUserService;
 
-    @PostMapping("/first_name")
-    public ResponseEntity<?> setFirstName(@CurrentUser AppUser user,
-                                          @RequestParam String name) {
-        appUserService.setFirstName(user, name);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/last_name")
-    public ResponseEntity<AppUser> setLastName(@CurrentUser AppUser user, @RequestParam String name) {
-        appUserService.setLastName(user, name);
-        return ResponseEntity.ok(user);
-    }
-
     @PostMapping("/image_url")
     public ResponseEntity<AppUser> setImageUrl(@CurrentUser AppUser user, @RequestParam String imageUrl) {
         appUserService.setImageUrl(user, imageUrl);
