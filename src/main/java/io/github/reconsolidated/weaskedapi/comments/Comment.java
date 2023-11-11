@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class Comment {
     private String authorName;
     @Column(length = 10000)
     private String text;
-    private Date createdAt = Date.valueOf(LocalDate.now());
+    private Long createdAt = System.currentTimeMillis();
     @OneToMany(fetch = FetchType.EAGER)
     private List<Reaction> reactions = new ArrayList<>();
 }
