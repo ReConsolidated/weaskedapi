@@ -40,7 +40,7 @@ public class CommentsController {
     @PostMapping("/comments")
     public ResponseEntity<Comment> addComment(@CurrentUser AppUser user, @RequestBody Comment comment) {
         comment.setAuthorId(user.getId());
-        comment.setAuthorName(user.getUserName());
+        comment.setAuthorName(user.getUsername());
         comment.setCreatedAt(Date.valueOf(LocalDate.now()));
         comment.setReactions(new ArrayList<>());
         Comment result = commentsService.addComment(comment);

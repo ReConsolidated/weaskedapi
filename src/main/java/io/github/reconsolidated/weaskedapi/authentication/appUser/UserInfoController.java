@@ -1,28 +1,20 @@
 package io.github.reconsolidated.weaskedapi.authentication.appUser;
 
-import io.github.reconsolidated.weaskedapi.authentication.currentUser.CurrentUser;
 import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 @AllArgsConstructor
-@RequestMapping(path = "/users/current", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/users")
 public class UserInfoController {
 
-    @GetMapping
+    @GetMapping("/current")
     @ResponseBody
-    public AppUser currentUserInfo(@CurrentUser AppUser user) {
-        return user;
+    public AppUser currentUserInfo() {
+        return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
-    @GetMapping("/email")
-    @ResponseBody
-    public String currentUserEmail(@CurrentUser AppUser user) {
-        return user.getEmail();
-    }
-
 }

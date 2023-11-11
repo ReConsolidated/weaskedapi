@@ -1,7 +1,5 @@
 package io.github.reconsolidated.weaskedapi;
 
-import org.keycloak.adapters.KeycloakConfigResolver;
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +13,4 @@ public class WeAskedApiApplication {
 		SpringApplication.run(WeAskedApiApplication.class, args);
 	}
 
-	@Bean
-	public KeycloakConfigResolver keycloakConfigResolver() {
-		return new KeycloakSpringBootConfigResolver();
-	}
 }

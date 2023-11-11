@@ -38,17 +38,22 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://accounts.google.com
-          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
-          scope: openid,profile,email
-      client:
-        registration:
-          google:
-            clientId: 42661904383-0r3dvpam6r98t31j43ak63fmrqtmsi1k.apps.googleusercontent.com
-            clientSecret: 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
+  mail:
+    host: localhost
+    port: 1025
+    username: hello
+    password: hello
+    properties:
+      mail:
+        smtp:
+          ssl:
+            trust: "*"
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+
   liquibase:
     change-log: db/example-changelog.sql

@@ -1,51 +1,75 @@
 package io.github.reconsolidated.weaskedapi.authentication.appUser;
 
-import org.springframework.beans.factory.annotation.Value;
+import io.github.reconsolidated.weaskedapi.authentication.registration.token.ConfirmationToken;
+import io.github.reconsolidated.weaskedapi.authentication.registration.token.ConfirmationTokenService;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
-@Validated
-public class AppUserService {
+@AllArgsConstructor
+public class AppUserService implements UserDetailsService {
 
     private final static String USER_NOT_FOUND_MESSAGE =
             "user with email %s not found";
     private final AppUserRepository appUserRepository;
-    private final String defaultImageUrl = "";
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ConfirmationTokenService confirmationTokenService;
 
-    public AppUserService(AppUserRepository appUserRepository) {
-        this.appUserRepository = appUserRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return appUserRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
     }
 
-    public Optional<AppUser> findUserById(Long appUserId) {
-        return appUserRepository.findById(appUserId);
+    public Optional<AppUser> getById(long id) {
+        return appUserRepository.findById(id);
     }
 
-    public Optional<AppUser> findUserByEmail(String inviteeEmail) {
-        return appUserRepository.findByEmail(inviteeEmail);
+    public String signUpUser(AppUser appUser) {
+        boolean userExists = appUserRepository
+                .findByEmail(appUser.getEmail())
+                .isPresent();
+        appUser.setEnabled(true);
+        if (userExists) {
+            throw new IllegalStateException("email already taken");
+        }
+
+        String encodedPassword = bCryptPasswordEncoder.encode(appUser.getPassword());
+        appUser.setPassword(encodedPassword);
+
+        appUserRepository.save(appUser);
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                appUser
+        );
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+
+        return token;
     }
 
-    public AppUser getOrCreateUser(String keycloakId, String email, String userName, String firstName, String lastName) {
-        return appUserRepository.findByKeycloakId(keycloakId).orElseGet(() -> {
-            if (email == null) {
-                throw new IllegalArgumentException("Email is null");
-            }
-            if (findUserByEmail(email).isPresent()) {
-                throw new IllegalArgumentException("User with email %s already exists".formatted(email));
-            }
-            AppUser appUser = new AppUser();
-            appUser.setKeycloakId(keycloakId);
-            appUser.setEmail(email);
-            appUser.setFirstName(firstName);
-            appUser.setLastName(lastName);
-            appUser.setUserName(userName);
-            appUser.setImageUrl(defaultImageUrl);
+    public void enableAppUser(String email) {
+        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new IllegalStateException("AppUser with such email not found"));
+        appUser.setEnabled(true);
+        appUserRepository.save(appUser);
+    }
 
-            return appUserRepository.save(appUser);
-        });
+    public Optional<AppUser> getByEmail(String friendEmail) {
+        return appUserRepository.findByEmail(friendEmail);
     }
 
     public void setFirstName(AppUser user, String name) {
@@ -56,10 +80,6 @@ public class AppUserService {
     public void setLastName(AppUser user, String name) {
         user.setLastName(name);
         appUserRepository.save(user);
-    }
-
-    public AppUser getUser(Long appUserId) {
-        return appUserRepository.findById(appUserId).orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     public void setImageUrl(AppUser user, String imageUrl) {

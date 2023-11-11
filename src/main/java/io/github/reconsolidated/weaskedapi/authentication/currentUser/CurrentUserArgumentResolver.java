@@ -1,8 +1,8 @@
 package io.github.reconsolidated.weaskedapi.authentication.currentUser;
 
+import io.github.reconsolidated.weaskedapi.authentication.appUser.AppUser;
 import io.github.reconsolidated.weaskedapi.authentication.appUser.AppUserService;
 import lombok.AllArgsConstructor;
-import org.keycloak.KeycloakPrincipal;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -14,7 +14,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @AllArgsConstructor
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final AppUserService appUserService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -28,19 +27,8 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
             throw new BadCredentialsException("Authentication required");
         }
-        if (!(authentication.getPrincipal() instanceof KeycloakPrincipal principal)) {
-            throw new BadCredentialsException("User not found");
-        }
-        String keycloakId = principal.getName();
-        String email = principal.getKeycloakSecurityContext().getToken().getEmail();
-        String firstName = principal.getKeycloakSecurityContext().getToken().getGivenName();
-        String lastName = principal.getKeycloakSecurityContext().getToken().getFamilyName();
-        String userName = principal.getKeycloakSecurityContext().getToken().getPreferredUsername();
-        if (keycloakId == null) {
-            throw new BadCredentialsException("Keycloak id not found");
-        }
 
-        return appUserService.getOrCreateUser(keycloakId, email, userName, firstName, lastName);
+        return authentication.getPrincipal();
     }
 
 }
