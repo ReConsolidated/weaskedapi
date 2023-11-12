@@ -2,66 +2,73 @@ package io.github.reconsolidated.weaskedapi.comments;
 
 import io.github.reconsolidated.weaskedapi.authentication.appUser.AppUser;
 import io.github.reconsolidated.weaskedapi.reactions.Reaction;
-import io.github.reconsolidated.weaskedapi.reactions.ReactionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class CommentsService {
-    private final CommentsRepository commentsRepository;
-    private final ReactionRepository reactionRepository;
+    private final SiteCommentsRepository siteCommentsRepository;
 
-    public Comment addComment(Comment comment) {
-        return commentsRepository.save(comment);
-    }
-
-    public List<Comment> getAll() {
-        return commentsRepository.findAll();
+    public Comment addComment(String code, Comment comment) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElse(new SiteComments(code));
+        siteComments.getComments().add(comment);
+        siteCommentsRepository.save(siteComments);
+        return comment;
     }
 
     public List<Comment> getAllByCode(String code) {
-        return commentsRepository.findAllByCode(code);
+        var opt = siteCommentsRepository.findById(code);
+        if (opt.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return opt.get().getComments();
     }
 
     public void deleteAll() {
-        commentsRepository.deleteAll();
+        // siteCommentsRepository.deleteAll();
     }
 
-    public Comment updateReaction(AppUser user, Long commentId, String reactionType) {
-        Comment comment = commentsRepository.findById(commentId).orElseThrow();
+    public Comment updateReaction(AppUser user, String code, String commentId, String reactionType) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment comment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
         if (comment.getReactions().stream().anyMatch(
                 (c) -> c.getAuthorId().equals(user.getId()) &&
                         c.getReactionType().equals(reactionType))){
-            return removeReaction(user, commentId, reactionType);
+            return removeReaction(user, code, commentId, reactionType);
         }
 
 
         Reaction reaction = new Reaction();
-        reaction.setCommentId(commentId);
         reaction.setReactionType(reactionType);
         reaction.setAuthorId(user.getId());
-        reaction.setCreatedAt(Date.valueOf(LocalDate.now()));
+        reaction.setCreatedAt(System.currentTimeMillis());
         comment.getReactions().add(reaction);
-
-        reactionRepository.save(reaction);
-        return commentsRepository.save(comment);
+        siteCommentsRepository.save(siteComments);
+        return comment;
     }
 
-    public Comment removeReaction(AppUser user, Long commentId, String reactionType) {
-        Comment comment = commentsRepository.findById(commentId).orElseThrow();
-
+    public Comment removeReaction(AppUser user, String code, String commentId, String reactionType) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment comment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
         for (Reaction reaction : comment.getReactions()) {
             if (reaction.getAuthorId().equals(user.getId()) && reaction.getReactionType().equals(reactionType)) {
                 comment.getReactions().remove(reaction);
-                reactionRepository.deleteById(reaction.getId());
                 break;
             }
         }
-        return commentsRepository.save(comment);
+        siteCommentsRepository.save(siteComments);
+        return comment;
     }
 }

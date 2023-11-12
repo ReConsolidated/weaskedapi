@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,17 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
 public class Comment {
-    @Id
-    @GeneratedValue(generator = "comment_id_seq")
-    private Long id;
+    private String id;
     private Long authorId;
-    private String code;
     private String authorName;
     @Column(length = 10000)
     private String text;
-    private Long createdAt = System.currentTimeMillis();
-    @OneToMany(fetch = FetchType.EAGER)
+    private Long createdAt;
     private List<Reaction> reactions = new ArrayList<>();
 }

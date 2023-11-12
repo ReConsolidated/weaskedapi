@@ -38,6 +38,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  data:
+    mongodb:
+      uri: mongodb+srv://mongodb:docker@weasked-mongodb.ur1je5v.mongodb.net/?retryWrites=true&w=majority
+      database: weasked
   mail:
     host: localhost
     port: 1025
