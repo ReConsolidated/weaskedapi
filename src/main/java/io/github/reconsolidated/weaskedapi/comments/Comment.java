@@ -20,6 +20,8 @@ public class Comment {
     private String authorName;
     @Column(length = 10000)
     private String text;
+    private Boolean wasEdited = false;
     private Long createdAt;
     private List<Reaction> reactions = new ArrayList<>();
+    private List<Comment> subComments = new ArrayList<>();
 }

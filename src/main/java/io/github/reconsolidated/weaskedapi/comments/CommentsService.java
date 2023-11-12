@@ -71,4 +71,44 @@ public class CommentsService {
         siteCommentsRepository.save(siteComments);
         return comment;
     }
+
+    public Comment addSubComment(String code, String commentId, Comment comment) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment parentComment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
+        parentComment.getSubComments().add(comment);
+        siteCommentsRepository.save(siteComments);
+        return comment;
+    }
+
+    public Comment updateComment(AppUser currentUser, String code, String commentId, String newText) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment comment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
+        if (!comment.getAuthorId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("You are not the author of this comment");
+        }
+        comment.setText(newText);
+        comment.setWasEdited(true);
+        siteCommentsRepository.save(siteComments);
+        return comment;
+    }
+
+    public Comment deleteComment(AppUser currentUser, String code, String commentId) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment comment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
+        if (!comment.getAuthorId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("You are not the author of this comment");
+        }
+        siteComments.getComments().remove(comment);
+        siteCommentsRepository.save(siteComments);
+        return comment;
+    }
 }
