@@ -31,6 +31,15 @@ public class CommentsController {
         return ResponseEntity.ok(commentsService.updateReaction(user, code, commentId, reaction));
     }
 
+    @PatchMapping("/comments/{commentId}/sub_comments/{subCommentId}")
+    public ResponseEntity<Comment> addSubReaction(@CurrentUser AppUser user,
+                                                     @PathVariable(name="code") String code,
+                                                     @PathVariable(name="commentId") String commentId,
+                                                     @PathVariable(name="subCommentId") String subCommentId,
+                                                     @RequestParam String reaction) {
+        return ResponseEntity.ok(commentsService.updateSubReaction(user, code, commentId, subCommentId, reaction));
+    }
+
     @PostMapping("/comments/{commentId}/sub_comments")
     public ResponseEntity<Comment> addSubComment(@CurrentUser AppUser user,
                                               @PathVariable(name="code") String code,
@@ -72,6 +81,15 @@ public class CommentsController {
                                                  @PathVariable(name="code") String code,
                                                  @PathVariable(name="commentId") String commentId) {
         Comment result = commentsService.deleteComment(user, code, commentId);
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/comments/{commentId}/sub_comments/{subCommentId}")
+    public ResponseEntity<Comment> deleteSubComment(@CurrentUser AppUser user,
+                                                 @PathVariable(name="code") String code,
+                                                 @PathVariable(name="commentId") String commentId,
+                                                 @PathVariable(name="subCommentId") String subCommentId) {
+        Comment result = commentsService.deleteSubComment(user, code, commentId, subCommentId);
         return ResponseEntity.ok(result);
     }
 }

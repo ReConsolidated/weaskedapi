@@ -5,8 +5,6 @@ import io.github.reconsolidated.weaskedapi.reactions.Reaction;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +43,6 @@ public class CommentsService {
                         c.getReactionType().equals(reactionType))){
             return removeReaction(user, code, commentId, reactionType);
         }
-
 
         Reaction reaction = new Reaction();
         reaction.setReactionType(reactionType);
@@ -110,5 +107,52 @@ public class CommentsService {
         siteComments.getComments().remove(comment);
         siteCommentsRepository.save(siteComments);
         return comment;
+    }
+
+    public Comment deleteSubComment(AppUser user, String code, String commentId, String subCommentId) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment parentComment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
+        Comment subComment = parentComment.getSubComments().stream()
+                .filter((c) -> c.getId().equals(subCommentId))
+                .findFirst()
+                .orElseThrow();
+        if (!subComment.getAuthorId().equals(user.getId())) {
+            throw new IllegalArgumentException("You are not the author of this comment");
+        }
+        parentComment.getSubComments().remove(subComment);
+        siteCommentsRepository.save(siteComments);
+        return subComment;
+    }
+
+    public Comment updateSubReaction(AppUser user, String code, String commentId, String subCommentId, String reactionType) {
+        SiteComments siteComments = siteCommentsRepository.findById(code).orElseThrow();
+        Comment parentComment = siteComments.getComments().stream()
+                .filter((c) -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow();
+        Comment subComment = parentComment.getSubComments().stream()
+                .filter((c) -> c.getId().equals(subCommentId))
+                .findFirst()
+                .orElseThrow();
+
+        for (Reaction r : subComment.getReactions()) {
+            if (r.getAuthorId().equals(user.getId()) && r.getReactionType().equals(reactionType)) {
+                subComment.getReactions().remove(r);
+                siteCommentsRepository.save(siteComments);
+                return subComment;
+            }
+        }
+        Reaction reaction = new Reaction();
+        reaction.setReactionType(reactionType);
+        reaction.setAuthorId(user.getId());
+        reaction.setCreatedAt(System.currentTimeMillis());
+        subComment.getReactions().add(reaction);
+
+        siteCommentsRepository.save(siteComments);
+        return subComment;
+
     }
 }
