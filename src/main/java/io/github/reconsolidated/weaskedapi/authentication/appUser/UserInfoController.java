@@ -1,5 +1,6 @@
 package io.github.reconsolidated.weaskedapi.authentication.appUser;
 
+import io.github.reconsolidated.weaskedapi.authentication.currentUser.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,7 @@ public class UserInfoController {
 
     @GetMapping("/current")
     @ResponseBody
-    public AppUser currentUserInfo() {
-        return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public AppUser currentUserInfo(@CurrentUser AppUser currentUser) {
+        return currentUser;
     }
 }
