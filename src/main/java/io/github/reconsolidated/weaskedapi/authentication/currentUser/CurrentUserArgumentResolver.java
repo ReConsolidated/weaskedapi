@@ -24,7 +24,8 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal() == null || !(authentication.getPrincipal() instanceof AppUser)) {
             throw new BadCredentialsException("Authentication required");
         }
 
