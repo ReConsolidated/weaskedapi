@@ -6,37 +6,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @AllArgsConstructor
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
     private final AppUserService appUserService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider =
-                new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(bCryptPasswordEncoder);
-        provider.setUserDetailsService(appUserService);
-        return provider;
-    }
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http
-                .httpBasic()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeRequests()
+        http.authorizeRequests()
                 .antMatchers("/swagger-ui/**")
                 .permitAll()
                 .antMatchers("/swagger-ui.html")
@@ -45,24 +33,14 @@ public class SecurityConfiguration {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/comments/**")
                 .permitAll()
-                .antMatchers("/clear_all")
-                .permitAll()
-                .antMatchers("/test")
-                .permitAll()
-                .antMatchers("/registration/**")
-                .permitAll()
-                .antMatchers("/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
                 .and()
-                .formLogin();
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .oauth2ResourceServer().jwt()
+                .and()
+                .and()
+                .cors().and().csrf().disable();
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return appUserService;
     }
 
 }

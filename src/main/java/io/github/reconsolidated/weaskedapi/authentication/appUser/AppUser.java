@@ -17,7 +17,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @Entity
-public class AppUser implements UserDetails {
+public class AppUser {
     @Id
     @SequenceGenerator(
             name = "user_sequence",
@@ -31,7 +31,6 @@ public class AppUser implements UserDetails {
     private Long id;
     private String email;
     private String nickname;
-    private String password;
     private String imageUrl;
     @Enumerated(EnumType.STRING)
     private AppUserRole role;
@@ -41,46 +40,9 @@ public class AppUser implements UserDetails {
     public AppUser(String userName, String email, String password, AppUserRole role) {
         this.nickname = userName;
         this.email = email;
-        this.password = password;
         this.role = role;
         this.locked = false;
         this.enabled = false;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
-        return Collections.singletonList(authority);
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !locked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

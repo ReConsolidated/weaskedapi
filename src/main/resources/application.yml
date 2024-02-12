@@ -11,11 +11,32 @@ server:
 logging:
   level:
     root: INFO
+    org:
+      springframework:
+        security: DEBUG
 
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 449944618907-3fva3j7qv8m3t9oerrpa5r4drfillhu7.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid,profile,email
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v1/userinfo
+            user-name-attribute: id
+      resourceserver:
+        jwt:
+          issuer-uri: accounts.google.com
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
   datasource:
     password: ${SPRING_DATASOURCE_PASSWORD:docker}
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/weasked}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
   jpa:
     hibernate:

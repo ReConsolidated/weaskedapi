@@ -1,83 +1,49 @@
 package io.github.reconsolidated.weaskedapi.authentication.appUser;
 
-import io.github.reconsolidated.weaskedapi.authentication.registration.token.ConfirmationToken;
-import io.github.reconsolidated.weaskedapi.authentication.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
 @AllArgsConstructor
-public class AppUserService implements UserDetailsService {
+public class AppUserService {
 
-    private final static String USER_NOT_FOUND_MESSAGE =
-            "user with email %s not found";
     private final AppUserRepository appUserRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ConfirmationTokenService confirmationTokenService;
-
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND_MESSAGE.formatted(username)));
-    }
 
     public Optional<AppUser> getById(long id) {
         return appUserRepository.findById(id);
     }
 
-    public String signUpUser(AppUser appUser) {
-        boolean userExists = appUserRepository
-                .findByEmail(appUser.getEmail())
-                .isPresent();
-        appUser.setEnabled(true);
-        if (userExists) {
-            throw new IllegalStateException("email already taken");
-        }
-
-        String encodedPassword = bCryptPasswordEncoder.encode(appUser.getPassword());
-        appUser.setPassword(encodedPassword);
-
-        appUserRepository.save(appUser);
-
-        String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15),
-                appUser
-        );
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
-
-
-        return token;
-    }
-
-    public void enableAppUser(String email) {
-        AppUser appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new IllegalStateException("AppUser with such email not found"));
-        appUser.setEnabled(true);
-        appUserRepository.save(appUser);
-    }
-
-    public Optional<AppUser> getByEmail(String friendEmail) {
-        return appUserRepository.findByEmail(friendEmail);
-    }
-
-    public void setImageUrl(AppUser user, String imageUrl) {
-        user.setImageUrl(imageUrl);
-        appUserRepository.save(user);
+    public Optional<AppUser> getByEmail(String email) {
+        return appUserRepository.findByEmail(email);
     }
 
     public void deleteUser(AppUser user) {
         appUserRepository.delete(user);
+    }
+
+    public AppUser register() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication.getPrincipal() == null || !(authentication.getCredentials() instanceof Jwt authToken)) {
+            throw new BadCredentialsException("Authentication required");
+        }
+        Optional<AppUser> appUser = getByEmail(authToken.getClaims().get("email").toString());
+        if (appUser.isPresent()) {
+            throw new UserAlreadyExistsException();
+        } else {
+            AppUser user = new AppUser();
+            user.setRole(AppUserRole.USER);
+            user.setNickname(authToken.getClaims().get("name").toString());
+            user.setImageUrl(authToken.getClaims().get("picture").toString());
+            user.setEmail(authToken.getClaims().get("email").toString());
+            return appUserRepository.save(user);
+        }
     }
 }

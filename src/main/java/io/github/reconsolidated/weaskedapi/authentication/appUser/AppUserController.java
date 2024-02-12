@@ -1,11 +1,18 @@
 package io.github.reconsolidated.weaskedapi.authentication.appUser;
 
+import io.github.reconsolidated.weaskedapi.SecurityConfig;
 import io.github.reconsolidated.weaskedapi.authentication.currentUser.CurrentUser;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.Authenticator;
 
 @RestController
 @AllArgsConstructor
@@ -14,13 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class AppUserController {
     private final AppUserService appUserService;
 
-    @PostMapping("/image_url")
-    public ResponseEntity<AppUser> setImageUrl(@CurrentUser AppUser user, @RequestParam String imageUrl) {
-        appUserService.setImageUrl(user, imageUrl);
-        return ResponseEntity.ok(user);
+    @PostMapping("/register")
+    public ResponseEntity<AppUser> register() {
+        return ResponseEntity.ok(appUserService.register());
     }
 
-    // TODO remove before going to production
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@CurrentUser AppUser user) {
         appUserService.deleteUser(user);
