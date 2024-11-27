@@ -22,7 +22,7 @@ spring:
         registration:
           google:
             client-id: 449944618907-3fva3j7qv8m3t9oerrpa5r4drfillhu7.apps.googleusercontent.com
-            client-secret: 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
+            client-secret: ${OAUTH_CLIENT_SECRET}
             scope: openid,profile,email
         provider:
           google:
@@ -53,8 +53,8 @@ spring:
   mail:
     host: localhost
     port: 1025
-    username: hello
-    password: hello
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
